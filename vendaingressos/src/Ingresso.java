@@ -11,14 +11,20 @@
 #do código, e estou ciente que estes trechos não serão considerados para fins de avaliação.
 #******************************************************************************************/
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.UUID;
+
+
+
 /**
  * A classe {@code Ingresso} representa um ingresso de evento. Cada ingresso tem 
  * informações sobre o evento, preço, assento e status (ativo ou cancelado).
  */
 public class Ingresso {
-    private Evento Evento; 
+    private String EventoID; 
     private double Preco;
-    private String Assento;
+    private String IngressoID; 
     private boolean Status;
 
     /**
@@ -27,12 +33,15 @@ public class Ingresso {
      * @param Evento o evento associado ao ingresso
      * @param Assento o assento associado ao ingresso
      */
-    public Ingresso(Evento Evento, String Assento) {
-        this.Evento = Evento;
+    public Ingresso(Evento evento) {
+        this.EventoID = evento.getID();
         this.Preco = 0.0;
-        this.Assento = Assento;
         this.Status = true;
+        this.IngressoID = gerarId(evento);
     }
+
+
+
 
     /**
      * Constrói um ingresso com um preço específico.
@@ -41,20 +50,20 @@ public class Ingresso {
      * @param Preco o preço do ingresso
      * @param Assento o assento associado ao ingresso
      */
-    public Ingresso(Evento Evento, double Preco, String Assento) {
-        this.Evento = Evento;
+    public Ingresso(Evento evento, double Preco) {
+        this.EventoID = evento.getID();
         this.Preco = Preco;
-        this.Assento = Assento;
         this.Status = true;
+        this.IngressoID = gerarId(evento);
     }
 
-    /**
-     * Retorna o evento associado ao ingresso.
-     * 
-     * @return o evento
-     */
-    public Evento getEvento() {
-        return Evento;
+
+    private String gerarId(Evento evento) {
+        Date data = evento.getData();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
+        String dataEventoString = sdf.format(data);
+        String uuidString = UUID.randomUUID().toString();
+        return dataEventoString + "-" + uuidString;
     }
     
     /**
@@ -66,13 +75,12 @@ public class Ingresso {
         return Preco;
     }
 
-    /**
-     * Retorna o assento associado ao ingresso.
-     * 
-     * @return o assento
-     */
-    public String getAssento() {
-        return Assento;
+    public String getEventoID(){
+        return this.EventoID;
+    }
+
+    public String getId(){
+        return this.IngressoID;
     }
 
     /**
@@ -84,55 +92,22 @@ public class Ingresso {
         return Status;
     }
 
-    /**
-     * Cancela o ingresso se o evento ainda estiver ativo.
-     * 
-     * @return {@code true} se o ingresso foi cancelado com sucesso, {@code false} se o evento não estiver ativo
-     */
-    public boolean cancelar() {
-        if (Evento.isAtivo()) {
-            this.Status = false;
-            return true;
-        } else {
-            return false;
-        }
+    public Boolean setStatus(Boolean status){
+        this.Status = status;
+        return status;
     }
 
-    /**
-     * Reativa o ingresso, tornando-o ativo novamente.
-     * 
-     * @return o status do ingresso após a reativação
-     */
-    public boolean reativar() {
-        this.Status = true;
-        return Status;
-    }
 
-    /**
-     * Gera um código hash baseado nos atributos do ingresso, 
-     * garantindo que objetos com os mesmos valores tenham o mesmo hash.
-     * 
-     * @return o código hash do ingresso
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((Evento == null) ? 0 : Evento.hashCode());
-        long temp;
-        temp = Double.doubleToLongBits(Preco);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        result = prime * result + ((Assento == null) ? 0 : Assento.hashCode());
+        result = prime * result + ((EventoID == null) ? 0 : EventoID.hashCode());
+        result = prime * result + ((IngressoID == null) ? 0 : IngressoID.hashCode());
         result = prime * result + (Status ? 1231 : 1237);
         return result;
     }
 
-    /**
-     * Verifica se este ingresso é igual a outro objeto.
-     * 
-     * @param obj o objeto a ser comparado
-     * @return {@code true} se os objetos são iguais, {@code false} caso contrário
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -142,17 +117,15 @@ public class Ingresso {
         if (getClass() != obj.getClass())
             return false;
         Ingresso other = (Ingresso) obj;
-        if (Evento == null) {
-            if (other.Evento != null)
+        if (EventoID == null) {
+            if (other.EventoID != null)
                 return false;
-        } else if (!Evento.equals(other.Evento))
+        } else if (!EventoID.equals(other.EventoID))
             return false;
-        if (Double.doubleToLongBits(Preco) != Double.doubleToLongBits(other.Preco))
-            return false;
-        if (Assento == null) {
-            if (other.Assento != null)
+        if (IngressoID == null) {
+            if (other.IngressoID != null)
                 return false;
-        } else if (!Assento.equals(other.Assento))
+        } else if (!IngressoID.equals(other.IngressoID))
             return false;
         if (Status != other.Status)
             return false;

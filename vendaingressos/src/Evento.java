@@ -11,12 +11,9 @@
 #do código, e estou ciente que estes trechos não serão considerados para fins de avaliação.
 #******************************************************************************************/
 
-import java.util.Date;
-import java.util.List;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.Calendar;
-import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,43 +26,49 @@ public class Evento {
     private String Nome;
     private String Descricao;
     private Date Data;
-    private List<String> Assento;
+    private int QuantidadeIngressos;
     private Map<String, String> avaliacoes;
-    
-
 
     /**
      * Construtor da classe {@code Evento}.
-     * 
+     *
      * @param Nome o nome do evento
      * @param Descricao a descrição do evento
      * @param Data a data em que o evento ocorrerá
      */
-    public Evento(String Nome, String Descricao, Date Data) {
-        this.ID = gerarId(Data);
+    public Evento(String Nome, String Descricao, Date Data, int ingressos) {
+        this.ID = gerarId(Data, Nome);
         this.Nome = Nome;
         this.Descricao = Descricao;
-        this.Data = Data;
-        this.Assento = new ArrayList<>();
+        this.Data = ajustarData(Data);
+        this.QuantidadeIngressos = ingressos;
         this.avaliacoes = new HashMap<>();
     }
 
-    private String gerarId(Date data) {
+    private String gerarId(Date data, String Nome) {
         // Formatar a data para pegar os dois últimos dígitos do ano, mês e dia
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
         String dataEventoString = sdf.format(data);
-        String uuidString = UUID.randomUUID().toString();
-        return dataEventoString + "-" + uuidString;
+        return Nome + "-" + dataEventoString;
     }
 
+    private Date ajustarData(Date data) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(data);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
 
-    public String getID(){
+    public String getID() {
         return ID;
     }
 
     /**
      * Retorna o nome do evento.
-     * 
+     *
      * @return o nome do evento
      */
     public String getNome() {
@@ -74,7 +77,7 @@ public class Evento {
 
     /**
      * Retorna a descrição do evento.
-     * 
+     *
      * @return a descrição do evento
      */
     public String getDescricao() {
@@ -83,60 +86,34 @@ public class Evento {
 
     /**
      * Retorna a data do evento.
-     * 
+     *
      * @return a data do evento
      */
     public Date getData() {
         return Data;
     }
 
-    /**
-     * Adiciona um assento à lista de assentos disponíveis para o evento.
-     * 
-     * @param assento o assento a ser adicionado
-     */
-    public void adicionarAssento(String assento) {
-        this.Assento.add(assento);
+    public int getIngressos(){
+        return this.QuantidadeIngressos;
     }
 
-    /**
-     * Retorna a lista de assentos disponíveis para o evento.
-     * 
-     * @return a lista de assentos disponíveis
-     */
-    public List<String> getAssentosDisponiveis() {
-        return Assento;
-    }
-
-    /**
-     * Remove um assento específico da lista de assentos disponíveis.
-     * 
-     * @param assento o assento a ser removido
-     */
-    public void removerAssento(String assento) {
-        for (String assentos : Assento) {
-            if (assento.equals(assentos)) {
-                this.Assento.remove(assento);
-                return;
-            }
-        }
+    public void setIngressos(int ingressos){
+        this.QuantidadeIngressos = ingressos;
     }
 
     /**
      * Verifica se o evento está ativo com base na data atual.
      * O evento é considerado ativo se a data do evento for posterior à data de referência (10 de agosto de 2024).
-     * 
+     *
      * @return {@code true} se o evento está ativo, {@code false} caso contrário
      */
-    public boolean isAtivo() {
-        Calendar calendario = Calendar.getInstance();
-        calendario.set(2024, Calendar.AUGUST, 10);
-        Date dataSet = calendario.getTime();
-
-        return this.Data.after(dataSet);
+    public boolean isAtivo(Date data) {
+        if(this.Data.before(data)){
+            return false;
+        }else{
+        return true;}
     }
 
-    // Atualização do código
     public void adicionarAvaliacao(String usuario, String avaliacao) {
         avaliacoes.put(usuario, avaliacao);
     }
@@ -146,7 +123,4 @@ public class Evento {
             System.out.println("Usuário: " + usuario.getKey() + " - Avaliação: " + usuario.getValue());
         }
     }
-
-
-    
 }

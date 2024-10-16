@@ -40,19 +40,8 @@ public class Armazenamento {
         Gson gsonFile = new Gson();
         String jsonFile = gsonFile.toJson(evento);
         String eventoID = evento.getID();
-
-        String pastaEvento = evento.getID().substring(0, 4);
-        String caminhoPasta = "vendaingressos/Dados/Eventos/" + pastaEvento;
-        File pasta = new File(caminhoPasta);
-
-        if (!pasta.exists()) {
-            if (!pasta.mkdirs()) {
-                System.out.println("Falha ao criar a pasta.");
-                return;
-            }
-        }
         
-        String caminhoArquivo = caminhoPasta + '/' + eventoID + ".json";
+        String caminhoArquivo = "vendaingressos\\Dados\\Eventos\\" + eventoID + ".json";
 
         try (FileWriter writer = new FileWriter(caminhoArquivo)) {
             writer.write(jsonFile);
@@ -62,5 +51,18 @@ public class Armazenamento {
         }
     }
 
-
+    
+    public Evento LerArquivoEvento (String eventoid){
+        
+        Gson gson = new Gson();
+        String jsonFile = "vendaingressos/Dados/Eventos/" + eventoid + ".json";
+        try (FileReader reader = new FileReader(jsonFile)) {
+           Evento evento = gson.fromJson(reader, Evento.class);
+            System.out.println("Dados recuperados com sucesso!");
+            return evento;
+        } catch (IOException | JsonSyntaxException erro) {
+            erro.printStackTrace();
+            return null;
+        }
+    }
 }

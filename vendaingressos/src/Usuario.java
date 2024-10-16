@@ -15,6 +15,7 @@
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * A classe {@code Usuario} representa um usuário do sistema de venda de ingressos.
@@ -189,20 +190,24 @@ public class Usuario {
     public List<Ingresso> getIngressos() {
         return this.Ingressos;
     }
-
-    /**
+    
+      /**
      * Remove um ingresso da lista de ingressos do usuário se ele for cancelado.
-     * 
+     *
      * @param ingresso o ingresso a ser removido
+     * @param evento o evento associado ao ingresso
+     * @param dataAtual a data atual para comparação
      * @return {@code true} se o ingresso foi removido, {@code false} caso contrário
      */
-    public boolean removeIngresso(Ingresso ingresso) {
-        if (ingresso.cancelar()) {
-            this.Ingressos.remove(ingresso);
+    public boolean removeIngresso(Ingresso ingresso, Evento evento, Date dataAtual) {
+        if (evento.getData().before(dataAtual)) {
+            Ingressos.remove(ingresso);
+            ingresso = null; // Excluir o objeto ingresso
             return true;
         }
         return false;
     }
+
 
 
     // ATUALIZAÇÃO DE CÓDIGO
@@ -222,13 +227,6 @@ public class Usuario {
         return this.Recibos;
     }
 
-
-
-
-
-
-    
-    
     
     // Verificação de igualdade entre objetos 
     /**

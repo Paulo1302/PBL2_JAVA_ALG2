@@ -12,7 +12,7 @@
 #******************************************************************************************/
 
 
-import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.List;
 
@@ -22,8 +22,7 @@ import java.util.List;
  * usuários e ingressos.
  */
 public class Controller {
-    // Armazenamento dos eventos
-    private List<Evento> listaEventos = new ArrayList<>();
+
     
     /**
      * Cadastra um novo usuário no sistema.
@@ -50,15 +49,16 @@ public class Controller {
      * @return o objeto {@code Evento} criado
      * @throws SecurityException se o usuário não for administrador
      */
-    public Evento cadastrarEvento(Usuario admin, String nome, String descricao, Date data) throws SecurityException { 
+   
+    public Evento cadastrarEvento(Usuario admin, String nome, String descricao, Date data, int ingressos, Armazenamento dados) throws SecurityException { 
         if (admin.isAdmin()) {
-            Evento evento = new Evento(nome, descricao, data);
-            this.listaEventos.add(evento);
+            Evento evento = new Evento(nome, descricao, data, ingressos);
+            dados.ArmazenarEvento(evento);
             return evento;
         } else {
             throw new SecurityException("Somente administradores podem cadastrar eventos.");
         }
-    }
+    } 
 
     /**
      * Procura um evento pelo nome.
@@ -66,7 +66,7 @@ public class Controller {
      * @param nomeEvento o nome do evento a ser procurado
      * @return o evento correspondente ou {@code null} se não for encontrado
      */
-    public Evento procuraEvento(String nomeEvento) {
+   /*  public Evento procuraEvento(String nomeEvento) {
         for (Evento evento : listaEventos) {
             if (evento.getNome().equals(nomeEvento)) {
                 return evento;
@@ -74,7 +74,7 @@ public class Controller {
         }
         System.out.println("Evento Não encontrado!");
         return null; 
-    }
+    } */
 
     /**
      * Adiciona um assento a um evento.
@@ -82,10 +82,10 @@ public class Controller {
      * @param nomeEvento o nome do evento
      * @param assento o nome do assento a ser adicionado
      */
-    public void adicionarAssentoEvento(String nomeEvento, String assento) {
+   /* public void adicionarAssentoEvento(String nomeEvento, String assento) {
         Evento evento = this.procuraEvento(nomeEvento);
         evento.adicionarAssento(assento);
-    }
+    } */
 
     /**
      * Compra um ingresso para um usuário.
@@ -95,11 +95,16 @@ public class Controller {
      * @param assento o assento escolhido para o evento
      * @return o objeto {@code Ingresso} comprado
      */
-    public Ingresso comprarIngresso(Usuario usuario, String evento, String assento) {
-        Evento EventoAtual = this.procuraEvento(evento);
-        Ingresso ingresso = new Ingresso(EventoAtual, assento);
+    public Ingresso comprarIngresso(Usuario usuario, String eventoID, Armazenamento dados) {
+        Evento EventoAtual = dados.LerArquivoEvento(eventoID);
+        Ingresso ingresso = new Ingresso(EventoAtual);
+        
+        EventoAtual.setIngressos(EventoAtual.getIngressos()-1);
         usuario.adicionarIngresso(ingresso);
-
+        
+        dados.ArmazenamentoUser(usuario);
+        dados.ArmazenarEvento(EventoAtual);
+        
         return ingresso;
     }
 
@@ -110,8 +115,16 @@ public class Controller {
      * @param ingresso o ingresso que está sendo cancelado
      * @return {@code true} se o cancelamento foi bem-sucedido, {@code false} caso contrário
      */
-    public boolean cancelarCompra(Usuario usuario, Ingresso ingresso) {
-        return usuario.removeIngresso(ingresso);
+    public boolean cancelarCompra(Usuario usuario, Ingresso ingresso, Date data, Armazenamento dados) {
+        String eventoId = ingresso.getEventoID();
+        Evento evento = dados.LerArquivoEvento(eventoId);
+        if(usuario.removeIngresso(ingresso, evento, data)) {
+        evento.setIngressos(evento.getIngressos()+1);
+        dados.ArmazenarEvento(evento);
+        dados.ArmazenamentoUser(usuario);
+        }
+    
+        return usuario.removeIngresso(ingresso, evento, data);
     }
 
     /**
@@ -129,9 +142,9 @@ public class Controller {
      * 
      * @return a lista de eventos disponíveis
      */
-    public List<Evento> listarEventosDisponiveis() {
+   /*  public List<Evento> listarEventosDisponiveis() {
         return listaEventos;
-    }
+    } */
 
 
 
