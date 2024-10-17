@@ -37,7 +37,7 @@ public class Evento {
         // Formatar a data para pegar os dois últimos dígitos do ano, mês e dia
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
         String dataEventoString = sdf.format(data);
-        return Nome + "-" + dataEventoString;
+        return dataEventoString + "-" + Nome ;
     }
 
     private Date ajustarData(Date data) {

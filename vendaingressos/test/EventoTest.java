@@ -1,9 +1,9 @@
 
 import java.util.Date;
-
+import java.io.File;
 import java.util.Calendar;
 
-
+import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -11,6 +11,30 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 public class EventoTest {
+
+     private void deleteFilesInDirectory(File directory) {
+        if (directory.isDirectory()) {
+            for (File subFile : directory.listFiles()) {
+                if (subFile.isFile() && subFile.getName().endsWith(".json")) {
+                    subFile.delete();
+                } else if (subFile.isDirectory()) {
+                    deleteFilesInDirectory(subFile); // Recursivamente deletar arquivos em subdiretórios
+                }
+            }
+        }
+    }
+
+    // Método para limpar arquivos JSON após cada teste
+    @After
+    public void cleanUp() {
+        File directoryEvento = new File("vendaingressos/Dados/Eventos");
+        deleteFilesInDirectory(directoryEvento);
+
+        File directoryUser = new File("vendaingressos/Dados/Usuarios");
+        deleteFilesInDirectory(directoryUser);
+    }
+
+
 
     @Test
     public void testCriarEvento() {
@@ -86,5 +110,22 @@ public class EventoTest {
 
         Evento evento = new Evento("Show de Rock", "Banda XYZ", data, 100);
         assertFalse(evento.isAtivo(dataSet));
+    }
+
+    @Test
+    public void ArmazenamentoDadosEvento(){
+        Controller controller = new Controller();
+        Armazenamento dados = new Armazenamento();
+
+        Usuario admin = controller.cadastrarUsuario("admin", "senha123", "Admin User", "00000000000", "admin@example.com", true);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2024, Calendar.SEPTEMBER, 10);
+        Date data = calendar.getTime();
+
+        Evento evento = controller.cadastrarEvento(admin, "Show de Rock", "Banda XYZ", data, 100, dados);
+        
+
+        controller.ArmazenarEvento(evento, dados);
     }
 }

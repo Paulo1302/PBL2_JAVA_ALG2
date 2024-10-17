@@ -1,7 +1,9 @@
 import java.util.Date;
+import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -11,6 +13,31 @@ import static org.junit.Assert.assertThrows;
 
 
 public class ControllerTest {
+
+     // Método para deletar apenas arquivos JSON em diretórios, mantendo as pastas
+     private void deleteFilesInDirectory(File directory) {
+        if (directory.isDirectory()) {
+            for (File subFile : directory.listFiles()) {
+                if (subFile.isFile() && subFile.getName().endsWith(".json")) {
+                    subFile.delete();
+                } else if (subFile.isDirectory()) {
+                    deleteFilesInDirectory(subFile); // Recursivamente deletar arquivos em subdiretórios
+                }
+            }
+        }
+    }
+
+    // Método para limpar arquivos JSON após cada teste
+    @After
+    public void cleanUp() {
+        File directoryEvento = new File("vendaingressos/Dados/Eventos");
+        deleteFilesInDirectory(directoryEvento);
+
+        File directoryUser = new File("vendaingressos/Dados/Usuarios");
+        deleteFilesInDirectory(directoryUser);
+    }
+
+
 
     @Test
     public void testCadastrarEventoPorAdmin() {
@@ -65,7 +92,9 @@ public class ControllerTest {
         Evento evento = controller.cadastrarEvento(admin, "Show de Rock", "Banda XYZ", data, 100, dados);
         String eventoid = evento.getID();
 
-        Ingresso ingresso = controller.comprarIngresso(usuario, eventoid, dados);
+        String pagamento = "Credito";
+
+        Ingresso ingresso = controller.comprarIngresso(usuario, eventoid, dados, pagamento,data);
 
 
         assertNotNull(ingresso);
@@ -87,11 +116,12 @@ public class ControllerTest {
         Usuario admin = controller.cadastrarUsuario("admin", "senha123", "Admin User", "00000000000", "admin@example.com", true);
         Evento evento =controller.cadastrarEvento(admin, "Show de Rock", "Banda XYZ", data, 100, dados);
         String eventoId = evento.getID();
-        Ingresso ingresso = controller.comprarIngresso(usuario, eventoId, dados);
+        String pagamento = "Credito";
+
+        Ingresso ingresso = controller.comprarIngresso(usuario, eventoId, dados, pagamento, data);
 
         boolean cancelado = controller.cancelarCompra(usuario, ingresso, data, dados);
         assertTrue(cancelado);
-       // assertFalse(ingresso.isAtivo());
         assertFalse(usuario.getIngressos().contains(ingresso));
     }
 
@@ -102,23 +132,22 @@ public class ControllerTest {
         Armazenamento dados = new Armazenamento();
 
         Calendar calendar1 = Calendar.getInstance();
-        calendar1.set(2024, Calendar.SEPTEMBER, 10);
+        calendar1.set(2034, Calendar.SEPTEMBER, 10);
         Date data1 = calendar1.getTime();
 
         Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(2024, Calendar.SEPTEMBER, 15);
+        calendar2.set(2034, Calendar.SEPTEMBER, 15);
         Date data2 = calendar2.getTime();
 
         controller.cadastrarEvento(admin, "Show de Rock", "Banda XYZ", data1, 100, dados);
         controller.cadastrarEvento(admin, "Peça de Teatro", "Grupo ABC", data2, 100, dados);
 
-      /*   List<Evento> eventos = controller.listarEventosDisponiveis();
+         List<String> eventos = dados.listarEventosDisponiveis();
 
-        assertEquals(2, eventos.size()); */
+        assertEquals(2, eventos.size()); 
     }
 
     @Test
-    // alterar
     public void testListarIngressosComprados() {
         Controller controller = new Controller();
         Usuario usuario = new Usuario("johndoe", "senha123", "John Doe", "12345678901", "john.doe@example.com", false);
@@ -130,9 +159,10 @@ public class ControllerTest {
 
         Usuario admin = controller.cadastrarUsuario("admin", "senha123", "Admin User", "00000000000", "admin@example.com", true);
         Evento evento = controller.cadastrarEvento(admin, "Show de Rock", "Banda XYZ", data, 100, dados);
-        
+        String pagamento = "Credito";
 
-        controller.comprarIngresso(usuario, evento.getID(), dados);
+
+        controller.comprarIngresso(usuario, evento.getID(), dados, pagamento, data);
 
         List<Ingresso> ingressos = controller.listarIngressosComprados(usuario);
 

@@ -3,11 +3,40 @@
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+
+import org.junit.After;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 
 public class UsuarioTest {
+
+     private void deleteFilesInDirectory(File directory) {
+        if (directory.isDirectory()) {
+            for (File subFile : directory.listFiles()) {
+                if (subFile.isFile() && subFile.getName().endsWith(".json")) {
+                    subFile.delete();
+                } else if (subFile.isDirectory()) {
+                    deleteFilesInDirectory(subFile); // Recursivamente deletar arquivos em subdiretórios
+                }
+            }
+        }
+    }
+
+    // Método para limpar arquivos JSON após cada teste
+    @After
+    public void cleanUp() {
+        File directoryEvento = new File("vendaingressos/Dados/Eventos");
+        deleteFilesInDirectory(directoryEvento);
+
+        File directoryUser = new File("vendaingressos/Dados/Usuarios");
+        deleteFilesInDirectory(directoryUser);
+    }
+
+
 
     @Test
     public void testCadastrarUsuario() {
@@ -70,4 +99,6 @@ public class UsuarioTest {
 
         assertEquals(usuario1, usuario2);
     }
+
+    
 }

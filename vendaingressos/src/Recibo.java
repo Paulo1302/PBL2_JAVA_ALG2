@@ -6,16 +6,18 @@ public class Recibo {
     private String cpf;
     private String email;
     private Ingresso ingresso;
-    private Evento evento;
+    private String eventoID;
+    private String Pagamento;
     private Date data;
     
 
-    public Recibo (String fullName, String cpf, String email, Ingresso ingresso, Evento evento, Date data){
+    public Recibo (String fullName, String cpf, String email, Ingresso ingresso, String pagamento, String eventoID, Date data){
         this.fullName = fullName;
         this.cpf = cpf;
         this.email = email;
         this.ingresso = ingresso;
-        this.evento = evento;
+        this.Pagamento = pagamento;
+        this.eventoID = eventoID;
         this.data = data;    
     }
 
@@ -39,8 +41,8 @@ public class Recibo {
         return ingresso;
     }
     
-    public Evento getEvento() {
-        return evento;
+    public String getEventoID() {
+        return eventoID;
     }
 
 
@@ -48,4 +50,7 @@ public class Recibo {
         return data;
     }
 
+    public String Pagamento() {
+        return Pagamento;
+    }
 }

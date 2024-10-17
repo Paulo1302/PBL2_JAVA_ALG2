@@ -1,9 +1,12 @@
 
+import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -11,6 +14,29 @@ import java.util.Date;
 
 // refazer
 public class IngressoTest {
+
+     private void deleteFilesInDirectory(File directory) {
+        if (directory.isDirectory()) {
+            for (File subFile : directory.listFiles()) {
+                if (subFile.isFile() && subFile.getName().endsWith(".json")) {
+                    subFile.delete();
+                } else if (subFile.isDirectory()) {
+                    deleteFilesInDirectory(subFile); // Recursivamente deletar arquivos em subdiretórios
+                }
+            }
+        }
+    }
+
+    // Método para limpar arquivos JSON após cada teste
+    @After
+    public void cleanUp() {
+        File directoryEvento = new File("vendaingressos/Dados/Eventos");
+        deleteFilesInDirectory(directoryEvento);
+
+        File directoryUser = new File("vendaingressos/Dados/Usuarios");
+        deleteFilesInDirectory(directoryUser);
+    }
+
 
     @Test
     public void testCriarIngresso() {
