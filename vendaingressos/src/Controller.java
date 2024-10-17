@@ -101,6 +101,10 @@ public class Controller {
         return usuario.getIngressos();
     }
 
+    public List<Recibo> listarRecibos(Usuario usuario){
+        return usuario.getRecibos();
+    }
+
     // ATUALIZAÇÕES DO CÓDIGO
 
     public void NovoCadastroUsuario(Usuario usuario, String username, String senha, String nome, String email) {
@@ -117,6 +121,10 @@ public class Controller {
 
     public void ArmazenarEvento(Evento evento, Armazenamento dados){
         dados.ArmazenarEvento(evento);
+    }
+
+    public Evento LerDadosEvento(String eventoID, Armazenamento dados){
+        return dados.LerArquivoEvento(eventoID);
     }
 
     public void AvaliarEvento(Evento evento, Usuario usuario, String avaliacao){
