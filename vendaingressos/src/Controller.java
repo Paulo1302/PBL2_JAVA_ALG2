@@ -127,6 +127,7 @@ public class Controller {
         return dados.LerArquivoEvento(eventoID);
     }
 
+    // verificar se o usuário participou do evento
     public void AvaliarEvento(Evento evento, Usuario usuario, String avaliacao){
         evento.adicionarAvaliacao(usuario.getLogin(), avaliacao);
     }

@@ -27,9 +27,6 @@ public class Ingresso {
         this.IngressoID = gerarId(evento);
     }
 
-
-
-
     /**
      * Constrói um ingresso com um preço específico.
      * 
